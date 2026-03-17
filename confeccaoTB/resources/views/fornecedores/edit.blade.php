@@ -52,3 +52,9 @@
         </div>
     </div>
 </x-app-layout>
+
+<script type="module">
+    $(function(){
+        $('#cnpj').mask('AA.AAA.AAA/AAAA-00');
+    });
+</script>

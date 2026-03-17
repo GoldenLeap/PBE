@@ -23,7 +23,7 @@
                         <h3 class="text-lg font-medium">Gerenciamento de Estoque</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Controle de entrada e saída de mercadorias.</p>
                     </div>
-                    
+
                     <div class="overflow-x-auto border rounded-lg border-gray-200 dark:border-gray-700">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 uppercase">
@@ -48,15 +48,15 @@
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 text-right flex justify-end items-center space-x-2">
+                                        <td class="px-6 py-4 text-right">
                                             <a href="{{ route('estoque.edit', $estoque) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-medium">Editar</a>
-                                            <form action="{{ route('estoque.destroy', $estoque->id) }}" method="POST" class="inline">
+                                            <form id="del-{{ $estoque->id }}" action="{{ route('estoque.destroy', $estoque->id) }}" method="POST" class="hidden">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold" onclick="return confirm('Tem certeza que deseja excluir este item do estoque?')">
-                                                    Excluir
-                                                </button>
                                             </form>
+                                            <button type="button" onclick="openDeleteModal('del-{{ $estoque->id }}', '{{ addslashes($estoque->nome_produto) }}')" class="text-red-500 hover:text-red-700 text-sm font-semibold ml-2">
+                                                Excluir
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
@@ -73,4 +73,48 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="delete-modal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center;">
+        <div onclick="closeDeleteModal()" style="position:fixed; inset:0; background:rgba(0,0,0,0.5);"></div>
+        <div style="position:relative; background:white; border-radius:12px; padding:24px; width:100%; max-width:400px; margin:0 16px; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="text-align:center; margin-bottom:16px;">
+                <div style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:50%; background:#fee2e2; margin-bottom:12px;">
+                    <svg width="24" height="24" fill="none" stroke="#dc2626" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                </div>
+                <h3 style="font-size:18px; font-weight:600; color:#111; margin-bottom:8px;">Confirmar Exclusão</h3>
+                <p id="delete-modal-name" style="font-size:15px; font-weight:600; color:#111; margin-bottom:4px;"></p>
+                <p style="font-size:14px; color:#6b7280;">Tem certeza que deseja excluir este item do estoque? Esta ação não poderá ser desfeita.</p>
+            </div>
+            <div style="display:flex; justify-content:center; gap:12px; margin-top:20px;">
+                <button onclick="closeDeleteModal()" style="padding:8px 20px; border-radius:8px; border:1px solid #d1d5db; background:#f9fafb; color:#374151; font-size:14px; cursor:pointer;">
+                    Cancelar
+                </button>
+                <button onclick="confirmDelete()" style="padding:8px 20px; border-radius:8px; border:none; background:#dc2626; color:white; font-size:14px; font-weight:600; cursor:pointer;">
+                    Sim, Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var pendingDeleteFormId = null;
+
+        function openDeleteModal(formId, name) {
+            pendingDeleteFormId = formId;
+            document.getElementById('delete-modal-name').textContent = name || '';
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteFormId = null;
+            document.getElementById('delete-modal').style.display = 'none';
+        }
+
+        function confirmDelete() {
+            if (pendingDeleteFormId) {
+                document.getElementById(pendingDeleteFormId).submit();
+            }
+        }
+    </script>
 </x-app-layout>
