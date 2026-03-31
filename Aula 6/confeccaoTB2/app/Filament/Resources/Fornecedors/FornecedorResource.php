@@ -15,14 +15,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-
+use UnitEnum;
 class FornecedorResource extends Resource
 {
     protected static ?string $model = Fornecedor::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Fornecedores';
+    protected static ?string $navigationLabel = 'Fornecedor';
+    protected static ?string $pluralModelLabel = 'Fornecedores';
+    protected static?string $modelLabel = 'Fornecedor';
+    protected static string|UnitEnum|null $navigationGroup = 'Administração';    protected static ?string $recordTitleAttribute = 'Fornecedores';
 
     public static function form(Schema $schema): Schema
     {
