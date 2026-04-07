@@ -9,20 +9,30 @@ use App\Filament\Resources\Permissions\Pages\ViewPermission;
 use App\Filament\Resources\Permissions\Schemas\PermissionForm;
 use App\Filament\Resources\Permissions\Schemas\PermissionInfolist;
 use App\Filament\Resources\Permissions\Tables\PermissionsTable;
-use App\Models\Permission;
+// use App\Models\Permission;
+use Spatie\Permission\Models\Permission;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-
+use UnitEnum;
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+
+
+    protected static ?string $navigationLabel = 'Painel Permissões';
+    protected static ?string $modelLabel = 'Criar';
+    protected static ?string $pluralModelLabel = 'Permissões';
+    protected static string|UnitEnum|null $navigationGroup = 'Administração';
+    
     protected static ?string $recordTitleAttribute = 'Permissões';
+
+
 
     public static function form(Schema $schema): Schema
     {

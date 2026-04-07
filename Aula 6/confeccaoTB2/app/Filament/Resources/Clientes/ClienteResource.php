@@ -15,12 +15,16 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-
+use UnitEnum;
 class ClienteResource extends Resource
 {
     protected static ?string $model = Cliente::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $navigationLabel = 'Clientes';
+    protected static ?string $modelLabel = 'Cliente';
+    protected static ?string $pluralModelLabel = 'Clientes';
+    protected static string|UnitEnum|null $navigationGroup = 'Cadastros Gerais';
 
     protected static ?string $recordTitleAttribute = 'Clientes';
 

@@ -15,12 +15,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PedidoResource extends Resource
 {
     protected static ?string $model = Pedido::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $navigationLabel = 'Pedidos';
+    protected static ?string $modelLabel = 'Pedido';
+    protected static ?string $pluralModelLabel = 'Pedidos';
+    protected static string|UnitEnum|null $navigationGroup = 'Vendas';
 
     protected static ?string $recordTitleAttribute = 'Pedidos';
 

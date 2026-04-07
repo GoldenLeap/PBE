@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 
 class RolesTable
 {
@@ -14,7 +15,21 @@ class RolesTable
     {
         return $table
             ->columns([
-                //
+            //    
+            TextColumn::make('name')
+                ->label('Nome')
+                ->searchable()
+                ->sortable(),
+                
+            TextColumn::make("permissions")
+                ->label("Permissões de acesso")
+                ->searchable()
+                ->sortable(),
+
+            TextColumn::make("created_at")
+                ->label('Criado em')
+                ->dateTime('d/m/Y')
+                ->sortable(),
             ])
             ->filters([
                 //

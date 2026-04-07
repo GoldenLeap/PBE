@@ -25,7 +25,7 @@ class FornecedorResource extends Resource
     protected static ?string $navigationLabel = 'Fornecedor';
     protected static ?string $pluralModelLabel = 'Fornecedores';
     protected static?string $modelLabel = 'Fornecedor';
-    protected static string|UnitEnum|null $navigationGroup = 'Administração';    protected static ?string $recordTitleAttribute = 'Fornecedores';
+    protected static string|UnitEnum|null $navigationGroup = 'Cadastros Gerais';    protected static ?string $recordTitleAttribute = 'Fornecedores';
 
     public static function form(Schema $schema): Schema
     {

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Gate;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register any application services.bhj5ds31'
      */
     public function register(): void
     {
@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Gate::before(function ($user, $ability){
-            return $user->hasHole('Admin')? true : null;
+            return $user->hasRole('Admin')? true : null;
 
         });
     }

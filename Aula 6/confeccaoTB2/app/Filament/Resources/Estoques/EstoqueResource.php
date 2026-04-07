@@ -15,12 +15,16 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-
+use UnitEnum;
 class EstoqueResource extends Resource
 {
     protected static ?string $model = Estoque::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $navigationLabel = 'Estoques';
+    protected static ?string $modelLabel = 'Estoque';
+    protected static ?string $pluralModelLabel = 'Estoques';
+    protected static string|UnitEnum|null $navigationGroup = 'Estoque';
 
     protected static ?string $recordTitleAttribute = 'Estoques';
 
