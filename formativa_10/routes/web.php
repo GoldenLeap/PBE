@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Models\Usuarios;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -35,7 +37,7 @@ Route::post('user/novo_usuario', function (Request $req) {
         'tipo_sanguineo' => 'string|max:3|required',
         'idade' => "integer|max:100|required",
     ]);
-    
+    Usuarios::create($req->all());
     return response()->json([
         'mensagem' => "Sucesso ao cadastrar usuario",
         'dados_recebidos' => $dados,
