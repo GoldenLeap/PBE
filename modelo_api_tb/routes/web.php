@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\PokemonController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+
+Route::get('pokedex', [PokemonController::class, "index"]);
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,3 +40,4 @@ Route::get('pokemon/{numero}', function($numero){
     }
     return response()->json(['status' => 'Erro pokemon não encontradp'], 404);
 });
+
