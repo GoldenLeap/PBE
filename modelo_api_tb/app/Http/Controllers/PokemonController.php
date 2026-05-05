@@ -4,14 +4,148 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Pokemon;
 
 class PokemonController extends Controller
 {
+
+    public function show(){
+        $listResponse = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon?limit=60&offset=0");
+
+        $pk = [];
+        if($listResponse->successful()){
+            $pkmns = $listResponse->json();
+            $pk = $pkmns["results"];
+        }
+
+        $cpk = Pokemon::all();
+
+        return view("home", compact('pk', 'cpk'));
+    }
+
+    public function getMore(Request $request) {
+        $offset = $request->input('offset', 0);
+        $limit = $request->input('limit', 60);
+        $response = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon?limit={$limit}&offset={$offset}");
+
+        if($response->successful()){
+            return response()->json($response->json());
+        }
+        return response()->json(['error' => 'Failed to fetch'], 500);
+    }
+
+    public function create(){
+        $tiposResp = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/type");
+
+        $tipos = [];
+        if($tiposResp->successful()){
+            $tipos = $tiposResp->json()['results'];
+        }
+
+        return view('pokemon.create', compact('tipos'));
+    }
+
+    public function store(Request $request){
+        $request->validate([
+            'nome_pokemon' => 'required|string|min:3',
+            'tipo' => 'required|string',
+            'tipo2' => 'nullable|string',
+            'ataque' => 'required|integer',
+            'altura' => 'required|numeric',
+            'peso' => 'required|numeric',
+            'moves' => 'nullable|string',
+            'foto_pokemon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto_pokemon')) {
+            $imageName = time().'.'.$request->foto_pokemon->extension();
+            $request->foto_pokemon->move(public_path('images/pokemons'), $imageName);
+            $fotoPath = 'images/pokemons/' . $imageName;
+        }
+
+        $moves = $request->input('moves') ? array_map('trim', explode(',', $request->input('moves'))) : [];
+
+        $tipoFinal = $request->tipo;
+        if ($request->filled('tipo2') && $request->tipo2 !== $request->tipo) {
+            $tipoFinal .= ',' . $request->tipo2;
+        }
+
+        $pokemon = Pokemon::create([
+            'nome' => $request->nome_pokemon,
+            'tipo' => $tipoFinal,
+            'ataque' => $request->ataque,
+            'altura' => $request->altura,
+            'peso' => $request->peso,
+            'moves' => $moves,
+            'foto' => $fotoPath,
+        ]);
+
+        return response()->json([
+            'status' => 'Pokemon criado com sucesso!',
+            'pokemon' => $pokemon
+        ], 201);
+    }
+
     //
-    public function index(){
-        $id = rand(1, 151);
-        $response = Http::get("https://pokeapi.co/api/v2/pokemon/{$id}");
-        $speciesResponse = Http::get("https://pokeapi.co/api/v2/pokemon-species/{$id}");
+    public function index($id = null){
+        if (!$id) {
+            $id = rand(1, 151);
+        }
+
+        $typeTranslations = [
+            'normal' => 'Normal',
+            'fire' => 'Fogo',
+            'water' => 'Água',
+            'grass' => 'Planta',
+            'electric' => 'Elétrico',
+            'ice' => 'Gelo',
+            'fighting' => 'Lutador',
+            'poison' => 'Venenoso',
+            'ground' => 'Terrestre',
+            'flying' => 'Voador',
+            'psychic' => 'Psíquico',
+            'bug' => 'Inseto',
+            'rock' => 'Pedra',
+            'ghost' => 'Fantasma',
+            'dragon' => 'Dragão',
+            'dark' => 'Sombrio',
+            'steel' => 'Aço',
+            'fairy' => 'Fada'
+        ];
+
+        $customPokemon = Pokemon::find($id);
+        if ($customPokemon) {
+            $tiposArray = explode(',', $customPokemon->tipo);
+            $typesFormatted = [];
+            foreach ($tiposArray as $t) {
+                $t = trim($t);
+                $translatedType = $typeTranslations[strtolower($t)] ?? $t;
+                $typesFormatted[] = ['type' => ['name' => $translatedType]];
+            }
+
+            $pokemon = [
+                'id' => $customPokemon->id,
+                'name' => $customPokemon->nome,
+                'types' => $typesFormatted,
+                'height' => $customPokemon->altura * 10,
+                'weight' => $customPokemon->peso * 10,
+                'moves' => array_map(function($move) {
+                    return ['move' => ['name' => $move], 'version_group_details' => [['level_learned_at' => 0]]];
+                }, $customPokemon->moves),
+                'sprites' => [
+                    'other' => [
+                        'official-artwork' => [
+                            'front_default' => asset($customPokemon->foto)
+                        ]
+                    ]
+                ]
+            ];
+            return view('pokemon', compact('pokemon'));
+        }
+
+        $response = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon/{$id}");
+        $speciesResponse = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon-species/{$id}");
 
         if($response->successful()){
             $pokemon = $response->json();
@@ -24,27 +158,6 @@ class PokemonController extends Controller
                     }
                 }
             }
-
-            $typeTranslations = [
-                'normal' => 'Normal',
-                'fire' => 'Fogo',
-                'water' => 'Água',
-                'grass' => 'Planta',
-                'electric' => 'Elétrico',
-                'ice' => 'Gelo' (),
-                'fighting' => 'Lutador',
-                'poison' => 'Venenoso',
-                'ground' => 'Terrestre',
-                'flying' => 'Voador',
-                'psychic' => 'Psíquico',
-                'bug' => 'Inseto',
-                'rock' => 'Pedra',
-                'ghost' => 'Fantasma',
-                'dragon' => 'Dragão',
-                'dark' => 'Sombrio',
-                'steel' => 'Aço',
-                'fairy' => 'Fada'
-            ];
 
             foreach($pokemon['types'] as $key => $tipo) {
                 $engName = $tipo['type']['name'];

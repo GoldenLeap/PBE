@@ -5,28 +5,16 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
-Route::get('pokedex', [PokemonController::class, "index"]);
+Route::get('pokedex/{id?}', [PokemonController::class, "index"])->name('pokemon.show');
+Route::get('pokemon/create', [PokemonController::class, "create"])->name('pokemon.create');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PokemonController::class, 'show'])->name('pokedex');
+Route::get('api/pokemon', [PokemonController::class, 'getMore'])->name('api.pokemon');
 
-Route::post('pokemon/novo', function(Request $req){
-    $dados = $req->validate([
-        'nome_pokemon' => 'required|string|min:3',
-        'tipo' => 'required|string',
-        'ataque' => 'required|integer',
-
-    ]);
-    return response()->json([
-        'mensagem' => 'Pokemon cadastrado com sucesso!',
-        'id_gerado' => floor(microtime(true) * 1000),
-        'dados_recebidos' => $dados,
-    ], 201);
-});
+Route::post('pokemon/novo', [PokemonController::class, 'store'])->name('pokemon.store');
 
 Route::get('pokemon/{numero}', function($numero){
-    $response = Http::get("https://pokeapi.co/api/v2/pokemon/{$numero}");
+    $response = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon/{$numero}");
     if($response->successful()){
         $dados = $response->json();
         return response()->json([

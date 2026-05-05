@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ ucfirst($pokemon['name']) }} - Pokedex Api</title>
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css'])
     @else
         <script src="https://cdn.tailwindcss.com"></script>
     @endif
@@ -34,6 +34,12 @@
     <div class="glass max-w-md w-full rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-blue-500/10">
 
         <div class="relative p-8 pb-0 text-center">
+            <a href="/" class="absolute top-8 left-8 text-white/60 hover:text-white transition-colors flex items-center gap-2 font-semibold z-20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Voltar
+            </a>
             <span class="absolute top-6 right-8 text-white/20 text-6xl font-black italic select-none">
                 #{{ str_pad($pokemon['id'], 3, '0', STR_PAD_LEFT) }}
             </span>
