@@ -8,6 +8,29 @@
     @vite("resources/css/app.css")
 </head>
 <body class="min-h-full">
+    @if(session('success'))
+        <div id="success-toast" class="fixed top-20 right-8 z-[100] bg-green-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="font-bold">{{ session('success') }}</span>
+            <button onclick="document.getElementById('success-toast').remove()" class="ml-4 hover:text-green-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <script>
+            setTimeout(() => {
+                const toast = document.getElementById('success-toast');
+                if(toast) {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => toast.remove(), 500);
+                }
+            }, 5000);
+        </script>
+    @endif
     <div class="flex flex-col gap-8 justify-between min-h-full">
         <div class="flex sticky top-0 bg-white/80 backdrop-blur-md p-4 z-50 border-b border-gray-100 shadow-sm">
             <input type="text" id="search-input" class="border border-gray-300 rounded-l-xl px-4 py-3 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Buscar Pokémon por nome ou número...">
@@ -36,7 +59,7 @@
         </div>
         <div id="custom" class="page grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 p-4" style="display: none;">
             @foreach ($cpk as $p)
-                <a href="{{ route('pokemon.show', $p->id) }}" class="pokemon-card bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col items-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300" data-name="{{ $p->nome }}" data-id="{{ $p->id }}">
+                <a href="{{ route('pokemon.show', 'c' . $p->id) }}" class="pokemon-card bg-white border border-gray-100 rounded-2xl shadow-sm p-4 flex flex-col items-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300" data-name="{{ $p->nome }}" data-id="c{{ $p->id }}">
                     <div class="w-full flex justify-between items-start mb-2">
                         <span class="text-xs font-bold text-gray-300">#C{{ str_pad($p->id, 3, '0', STR_PAD_LEFT) }}</span>
                     </div>
@@ -190,7 +213,8 @@
         }
         
         // Initialize tab
-        setTab(false);
+        const hasSuccess = {{ session('success') ? 'true' : 'false' }};
+        setTab(hasSuccess);
     </script>
 </body>
 </html>

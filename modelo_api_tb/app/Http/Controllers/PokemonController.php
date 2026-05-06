@@ -59,8 +59,9 @@ class PokemonController extends Controller
 
         $fotoPath = null;
         if ($request->hasFile('foto_pokemon')) {
-            $imageName = time().'.'.$request->foto_pokemon->extension();
-            $request->foto_pokemon->move(public_path('images/pokemons'), $imageName);
+            $file = $request->file('foto_pokemon');
+            $imageName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/pokemons'), $imageName);
             $fotoPath = 'images/pokemons/' . $imageName;
         }
 
@@ -71,7 +72,7 @@ class PokemonController extends Controller
             $tipoFinal .= ',' . $request->tipo2;
         }
 
-        $pokemon = Pokemon::create([
+        Pokemon::create([
             'nome' => $request->nome_pokemon,
             'tipo' => $tipoFinal,
             'ataque' => $request->ataque,
@@ -81,10 +82,7 @@ class PokemonController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        return response()->json([
-            'status' => 'Pokemon criado com sucesso!',
-            'pokemon' => $pokemon
-        ], 201);
+        return redirect()->route('pokedex')->with('success', 'Pokemon criado com sucesso!');
     }
 
     //
@@ -111,44 +109,54 @@ class PokemonController extends Controller
             'dragon' => 'Dragão',
             'dark' => 'Sombrio',
             'steel' => 'Aço',
-            'fairy' => 'Fada'
+            'fairy' => 'Fada',
+            'stellar' => 'Estelar'
         ];
 
-        $customPokemon = Pokemon::find($id);
-        if ($customPokemon) {
-            $tiposArray = explode(',', $customPokemon->tipo);
-            $typesFormatted = [];
-            foreach ($tiposArray as $t) {
-                $t = trim($t);
-                $translatedType = $typeTranslations[strtolower($t)] ?? $t;
-                $typesFormatted[] = ['type' => ['name' => $translatedType]];
-            }
+        // Se o ID começar com 'c' busca no banco de dados
+        if (str_starts_with($id, 'c')) {
+            $realId = substr($id, 1);
+            $customPokemon = Pokemon::find($realId);
 
-            $pokemon = [
-                'id' => $customPokemon->id,
-                'name' => $customPokemon->nome,
-                'types' => $typesFormatted,
-                'height' => $customPokemon->altura * 10,
-                'weight' => $customPokemon->peso * 10,
-                'moves' => array_map(function($move) {
-                    return ['move' => ['name' => $move], 'version_group_details' => [['level_learned_at' => 0]]];
-                }, $customPokemon->moves),
-                'sprites' => [
-                    'other' => [
-                        'official-artwork' => [
-                            'front_default' => asset($customPokemon->foto)
+            if ($customPokemon) {
+                $tiposArray = explode(',', $customPokemon->tipo);
+                $typesFormatted = [];
+                foreach ($tiposArray as $t) {
+                    $t = trim($t);
+                    $translatedType = $typeTranslations[strtolower($t)] ?? $t;
+                    $typesFormatted[] = ['type' => ['name' => $translatedType]];
+                }
+
+                $pokemon = [
+                    'id' => $customPokemon->id,
+                    'is_custom' => true,
+                    'name' => $customPokemon->nome,
+                    'types' => $typesFormatted,
+                    'height' => $customPokemon->altura * 10,
+                    'weight' => $customPokemon->peso * 10,
+                    'moves' => array_map(function($move) {
+                        return ['move' => ['name' => $move], 'version_group_details' => [['level_learned_at' => 0]]];
+                    }, $customPokemon->moves ?? []),
+                    'sprites' => [
+                        'other' => [
+                            'official-artwork' => [
+                                'front_default' => asset($customPokemon->foto)
+                            ]
                         ]
                     ]
-                ]
-            ];
-            return view('pokemon', compact('pokemon'));
+                ];
+                return view('pokemon', compact('pokemon'));
+            }
         }
 
+        // Caso contrário, buscamos na PokeAPI
         $response = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon/{$id}");
         $speciesResponse = Http::withoutVerifying()->get("https://pokeapi.co/api/v2/pokemon-species/{$id}");
 
         if($response->successful()){
             $pokemon = $response->json();
+            $pokemon['is_custom'] = false;
+
             if($speciesResponse->successful()) {
                 $species = $speciesResponse->json();
                 foreach($species['names'] as $nameEntry) {
