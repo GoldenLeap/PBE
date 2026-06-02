@@ -88,7 +88,7 @@ class PokemonController extends Controller
     //
     public function index($id = null){
         if (!$id) {
-            $id = rand(1, 151);
+            $id = rand(1, 800);
         }
 
         $typeTranslations = [

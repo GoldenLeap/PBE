@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title></title>
+    <title>Pokedex</title>
     @vite("resources/css/app.css")
 </head>
 <body class="min-h-full">
@@ -160,7 +160,7 @@
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const cards = document.querySelectorAll('.pokemon-card');
-            
+
             cards.forEach(card => {
                 const name = card.getAttribute('data-name')?.toLowerCase() || "";
                 const id = card.getAttribute('data-id')?.toString() || "";
@@ -196,7 +196,7 @@
             const defaultDiv = document.getElementById('default');
             const customDiv = document.getElementById('custom');
             const loadingEl = document.getElementById('loading');
-            
+
             const tabs = document.querySelectorAll('nav div');
             tabs[0].className = !isCustom ? 'cursor-pointer px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold' : 'cursor-pointer px-4 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold hover:bg-gray-200';
             tabs[1].className = isCustom ? 'cursor-pointer px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold' : 'cursor-pointer px-4 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold hover:bg-gray-200';
@@ -211,7 +211,7 @@
                 loadingEl.style.display = 'flex';
             }
         }
-        
+
         // Initialize tab
         const hasSuccess = {{ session('success') ? 'true' : 'false' }};
         setTab(hasSuccess);
