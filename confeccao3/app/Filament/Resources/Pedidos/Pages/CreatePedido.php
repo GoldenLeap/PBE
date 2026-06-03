@@ -34,4 +34,9 @@ class CreatePedido extends CreateRecord
             Mail::to($pedido->cliente->email)->send(new PedidoCriadoMail($pedido));
         }
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

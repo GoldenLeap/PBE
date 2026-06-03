@@ -20,6 +20,11 @@ class ItemPedidosRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    public function isReadOnly(): bool
+    {
+        return $this->getOwnerRecord()->status === 'Finalizado';
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema

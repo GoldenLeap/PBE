@@ -9,6 +9,8 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+use Filament\Tables\Filters\SelectFilter;
+
 class PedidosTable
 {
     public static function configure(Table $table): Table
@@ -46,11 +48,47 @@ class PedidosTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options([
+                        'Pendente' => 'Pendente',
+                        'Em Produção' => 'Em Produção',
+                        'Finalizado' => 'Finalizado',
+                    ])
+                    ->label('Status'),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                \Filament\Actions\Action::make('iniciar_producao')
+                    ->label('Produzir')
+                    ->icon('heroicon-o-play')
+                    ->color('info')
+                    ->visible(fn ($record) => $record->status === 'Pendente')
+                    ->action(fn ($record) => $record->update(['status' => 'Em Produção'])),
+                    
+                \Filament\Actions\Action::make('finalizar')
+                    ->label('Finalizar')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn ($record) => in_array($record->status, ['Pendente', 'Em Produção']))
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        try {
+                            $record->update(['status' => 'Finalizado']);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Pedido finalizado com sucesso!')
+                                ->success()
+                                ->send();
+                        } catch (\Illuminate\Validation\ValidationException $e) {
+                            $messages = $e->validator->errors()->all();
+                            \Filament\Notifications\Notification::make()
+                                ->title('Não foi possível finalizar')
+                                ->body(implode('<br>', $messages))
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+
+                \Filament\Actions\ViewAction::make(),
+                \Filament\Actions\EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

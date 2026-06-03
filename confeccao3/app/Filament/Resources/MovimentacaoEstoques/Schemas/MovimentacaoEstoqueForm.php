@@ -31,7 +31,17 @@ class MovimentacaoEstoqueForm
                     ->numeric()
                     ->required()
                     ->minValue(1)
-                    ->label('Quantidade'),
+                    ->label('Quantidade')
+                    ->rule(function (\Filament\Schemas\Components\Utilities\Get $get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            if ($get('tipo') === 'saida' && $get('produto_id')) {
+                                $produto = \App\Models\Produto::find($get('produto_id'));
+                                if ($produto && $produto->estoque < $value) {
+                                    $fail("A quantidade não pode ser maior que o estoque disponível ({$produto->estoque} unidades).");
+                                }
+                            }
+                        };
+                    }),
 
                 TextInput::make('observacao')
                     ->label('Observação')
