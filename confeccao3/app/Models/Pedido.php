@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\PedidoObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+#[ObservedBy(PedidoObserver::class)]
 class Pedido extends Model
 {
     protected $guarded = [];

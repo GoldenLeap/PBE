@@ -20,7 +20,15 @@ class MovimentacaoEstoqueResource extends Resource
 {
     protected static ?string $model = MovimentacaoEstoque::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Produção & Estoque';
+
+    protected static ?string $modelLabel = 'Movimentação de Estoque';
+
+    protected static ?string $pluralModelLabel = 'Movimentações de Estoque';
+
+    protected static ?string $navigationLabel = 'Movimentações';
 
     public static function form(Schema $schema): Schema
     {

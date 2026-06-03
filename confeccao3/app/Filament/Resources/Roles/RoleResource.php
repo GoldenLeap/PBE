@@ -21,6 +21,12 @@ class RoleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Função';
+
+    protected static ?string $pluralModelLabel = 'Funções';
+
+    protected static ?string $navigationLabel = 'Funções';
+
     public static function form(Schema $schema): Schema
     {
         return RoleForm::configure($schema);

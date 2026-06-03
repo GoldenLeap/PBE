@@ -20,7 +20,9 @@ class ClienteResource extends Resource
 {
     protected static ?string $model = Cliente::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Contatos';
 
     protected static ?string $recordTitleAttribute = 'Clientes';
 

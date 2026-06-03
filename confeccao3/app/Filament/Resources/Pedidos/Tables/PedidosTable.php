@@ -15,20 +15,33 @@ class PedidosTable
     {
         return $table
             ->columns([
-                TextColumn::make('cliente_id')
-                    ->numeric()
+                TextColumn::make('id')
+                    ->label('Nº')
+                    ->sortable(),
+                TextColumn::make('cliente.nome')
+                    ->label('Cliente')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Pendente' => 'warning',
+                        'Em Produção' => 'info',
+                        'Finalizado' => 'success',
+                        default => 'gray',
+                    }),
                 TextColumn::make('valor_total')
-                    ->numeric()
+                    ->label('Valor Total')
+                    ->money('BRL')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Criado em')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Atualizado em')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

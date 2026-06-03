@@ -20,7 +20,9 @@ class FornecedorResource extends Resource
 {
     protected static ?string $model = Fornecedor::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Contatos';
 
     protected static ?string $recordTitleAttribute = 'Fornecedores';
 
